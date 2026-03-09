@@ -4,10 +4,12 @@ import com.saerp.entity.Student;
 import com.saerp.entity.Subject;
 import com.saerp.entity.Teacher;
 import com.saerp.entity.User;
+import com.saerp.entity.CourseRegistration;
 import com.saerp.repository.StudentRepository;
 import com.saerp.repository.SubjectRepository;
 import com.saerp.repository.TeacherRepository;
 import com.saerp.repository.UserRepository;
+import com.saerp.repository.CourseRegistrationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,7 @@ public class DataInitializer implements CommandLineRunner {
     private final SubjectRepository subjectRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final CourseRegistrationRepository courseRegistrationRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -62,6 +65,20 @@ public class DataInitializer implements CommandLineRunner {
         createSubjectIfNotExists("Operating Systems", "CS304", 5, "Computer Science");
         createSubjectIfNotExists("Computer Networks", "CS305", 5, "Computer Science");
         createSubjectIfNotExists("Software Engineering", "CS306", 5, "Computer Science");
+        createSubjectIfNotExists("Machine Learning", "CS307", 6, "Computer Science");
+        createSubjectIfNotExists("Cloud Computing", "CS308", 6, "Computer Science");
+        createSubjectIfNotExists("Cybersecurity", "CS309", 6, "Computer Science");
+        createSubjectIfNotExists("Artificial Intelligence", "CS310", 6, "Computer Science");
+        createSubjectIfNotExists("Mobile App Development", "CS311", 6, "Computer Science");
+        createSubjectIfNotExists("Blockchain Technology", "CS312", 7, "Computer Science");
+
+        // Register demo student for demo courses
+        if (studentRepository.existsById(13L)) {
+            registerStudentForCourse(13L, "CS301", "Database Systems");
+            registerStudentForCourse(13L, "CS302", "Web Development");
+            registerStudentForCourse(13L, "CS303", "Data Science");
+            registerStudentForCourse(13L, "CS307", "Machine Learning");
+        }
     }
 
     private User createDemoUserIfNotExists(String email, String name, String password, User.Role role) {
@@ -90,6 +107,32 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             subjectRepository.save(subject);
             System.out.println("Created demo subject: " + name + " (" + code + ")");
+        }
+    }
+
+    private void registerStudentForCourse(Long studentId, String subjectCode, String subjectName) {
+        try {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            Subject subject = subjectRepository.findAll().stream()
+                    .filter(s -> s.getSubjectCode().equals(subjectCode))
+                    .findFirst()
+                    .orElse(null);
+
+            if (student != null && subject != null) {
+                boolean alreadyRegistered = courseRegistrationRepository
+                        .existsByStudentStudentIdAndSubjectSubjectId(studentId, subject.getSubjectId());
+                
+                if (!alreadyRegistered) {
+                    CourseRegistration registration = CourseRegistration.builder()
+                            .student(student)
+                            .subject(subject)
+                            .build();
+                    courseRegistrationRepository.save(registration);
+                    System.out.println("Registered student (ID: " + studentId + ") for course: " + subjectName);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Could not register student for course: " + subjectName);
         }
     }
 }

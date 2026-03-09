@@ -5,8 +5,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "course_registrations",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "subject_id"}))
+@Table(name = "course_registrations")
+@IdClass(CourseRegistrationId.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,16 +14,13 @@ import java.time.LocalDateTime;
 public class CourseRegistration {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "registration_id")
-    private Long registrationId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id")
     private Student student;
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id", nullable = false)
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 
     @Column(name = "registered_at")

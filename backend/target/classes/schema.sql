@@ -46,6 +46,18 @@ CREATE TABLE IF NOT EXISTS subjects (
     INDEX idx_subjects_code (subject_code)
 );
 
+-- Course Registrations (Junction table for students and subjects)
+CREATE TABLE IF NOT EXISTS course_registrations (
+    student_id BIGINT NOT NULL,
+    subject_id BIGINT NOT NULL,
+    registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (student_id, subject_id),
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE CASCADE,
+    INDEX idx_registration_student (student_id),
+    INDEX idx_registration_subject (subject_id)
+);
+
 -- Exam sessions table
 CREATE TABLE IF NOT EXISTS exam_sessions (
     exam_id BIGINT AUTO_INCREMENT PRIMARY KEY,

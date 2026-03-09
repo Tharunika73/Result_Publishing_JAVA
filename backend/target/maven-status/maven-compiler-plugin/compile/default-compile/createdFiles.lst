@@ -58,6 +58,7 @@ com\saerp\dto\ExamDtos.class
 com\saerp\dto\StudentDTO$StudentDTOBuilder.class
 com\saerp\security\CustomUserDetailsService.class
 com\saerp\dto\ResultDTO.class
+com\saerp\entity\CourseRegistrationId.class
 com\saerp\service\PdfService$3.class
 com\saerp\dto\ScriptAssignmentDTO.class
 com\saerp\security\JwtUtil.class
