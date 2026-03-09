@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: saerp_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: saerp_db
+      MYSQL_USER: saerp_user
+      MYSQL_PASSWORD: saerp_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - saerp_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: saerp_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_USERNAME=saerp_user
+      - DB_PASSWORD=saerp_pass
+      - JWT_SECRET=saerp-super-secret-key-for-jwt-authentication-min-256bits-long
+      - AES_SECRET=saerp-aes-key-32ch-for-prod-use
+      - AES_IV=saerp-aes-iv-16c
+      - FRONTEND_URL=http://localhost
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - saerp_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: saerp_frontend
+    ports:
+      - "5173:80"
+    networks:
+      - saerp_net
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: saerp_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - saerp_net
+
+volumes:
+  mysql_data:
+
+networks:
+  saerp_net:
+    driver: bridge
