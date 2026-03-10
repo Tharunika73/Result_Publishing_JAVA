@@ -74,6 +74,23 @@ public class AdminController {
             @RequestParam(defaultValue = "20") int size) {
         return ResponseEntity.ok(auditLogService.getAllLogs(page, size));
     }
+   @DeleteMapping("/users/{userId}")
+public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
+
+    userService.deleteUser(userId);
+
+    auditLogService.log(
+            extractUserId(request),
+            "DELETE_USER",
+            "USER",
+            userId.toString(),
+            request.getRemoteAddr(),
+            null,
+            "Deleted user"
+    );
+
+    return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+}
 
     @GetMapping("/students")
     public ResponseEntity<List<AuthDtos.UserDTO>> getStudents() {

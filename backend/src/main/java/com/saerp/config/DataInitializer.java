@@ -39,6 +39,7 @@ public class DataInitializer implements CommandLineRunner {
         User freshTeacher = userRepository.findByEmail("teacher@university.edu").orElseThrow();
         if (!teacherRepository.existsById(freshTeacher.getId())) {
             Teacher teacherEntity = Teacher.builder()
+                    .teacherId(freshTeacher.getId())
                     .user(freshTeacher)
                     .department("Computer Science")
                     .build();
@@ -49,6 +50,7 @@ public class DataInitializer implements CommandLineRunner {
         User freshStudent = userRepository.findByEmail("student@university.edu").orElseThrow();
         if (!studentRepository.existsById(freshStudent.getId())) {
             Student studentEntity = Student.builder()
+                    .studentId(freshStudent.getId())
                     .user(freshStudent)
                     .registerNumber("CS2024001")
                     .department("Computer Science")

@@ -69,6 +69,9 @@ public class UserService {
         return toDTO(user);
     }
 
+    public void deleteUser(Long userId) {
+    userRepository.deleteById(userId);
+    }
     @Transactional
     public void toggleUserStatus(Long userId) {
         User user = userRepository.findById(userId)

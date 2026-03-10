@@ -13,6 +13,6 @@ import java.io.Serializable;
 public class CourseRegistrationId implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long studentId;
-    private Long subjectId;
+    private Long student;
+    private Long subject;
 }
