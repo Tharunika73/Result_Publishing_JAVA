@@ -19,30 +19,25 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public AuthDtos.LoginResponse login(AuthDtos.LoginRequest request) {
-        try {
-            // Authenticate user
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
+        // Authenticate user
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
 
-            // Get user from database
-            User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+        // Get user from database
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new org.springframework.security.authentication.BadCredentialsException("User not found"));
 
             // Generate JWT token
             String token = jwtUtil.generateToken(user);
 
-            // Build and return response
-            return AuthDtos.LoginResponse.builder()
-                    .token(token)
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .role(user.getRole().name())
-                    .userId(user.getId())
-                    .build();
-
-        } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid credentials");
-        }
+        // Build and return response
+        return AuthDtos.LoginResponse.builder()
+                .token(token)
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .userId(user.getId())
+                .build();
     }
 }

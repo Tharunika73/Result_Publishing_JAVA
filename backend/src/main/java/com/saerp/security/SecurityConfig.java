@@ -52,18 +52,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated()
-        );
-
-    return http.build();
-}
+    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -75,7 +64,6 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();

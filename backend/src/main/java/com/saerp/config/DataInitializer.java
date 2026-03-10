@@ -84,19 +84,22 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private User createDemoUserIfNotExists(String email, String name, String password, User.Role role) {
-        if (!userRepository.existsByEmail(email)) {
-            User user = User.builder()
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            user = User.builder()
                     .email(email)
                     .name(name)
                     .passwordHash(passwordEncoder.encode(password))
                     .role(role)
                     .isActive(true)
                     .build();
-            user = userRepository.save(user);
             System.out.println("Created demo user: " + email);
-            return user;
+        } else {
+            user.setPasswordHash(passwordEncoder.encode(password));
+            user.setIsActive(true);
+            System.out.println("Updated password and activated demo user: " + email);
         }
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.save(user);
     }
 
     private void createSubjectIfNotExists(String name, String code, int semester, String department) {

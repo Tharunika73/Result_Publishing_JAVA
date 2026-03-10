@@ -34,6 +34,7 @@ public class AuthController {
                     "Login failed for: " + request.getEmail());
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         } catch (Exception e) {
+            e.printStackTrace();
             auditLogService.log(null, "LOGIN_ERROR", "AUTH", null,
                     httpRequest.getRemoteAddr(), httpRequest.getHeader("User-Agent"),
                     "Login system error for: " + request.getEmail());
