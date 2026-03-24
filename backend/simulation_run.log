@@ -1,0 +1,72 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------------< com.saerp:saerp-backend >-----------------------
+[INFO] Building SAERP Backend 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.3:run (default-cli) > test-compile @ saerp-backend >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ saerp-backend ---
+[INFO] Copying 2 resources from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ saerp-backend ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ saerp-backend ---
+[INFO] skip non existing resourceDirectory C:\Users\gokulbtech\OneDrive\Desktop\Project\miniproject\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ saerp-backend ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.2.3:run (default-cli) < test-compile @ saerp-backend <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.3:run (default-cli) @ saerp-backend ---
+[INFO] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.3)
+
+2026-03-10T21:47:52.019+05:30  INFO 27092 --- [           main] com.saerp.SaerpApplication               : Starting SaerpApplication using Java 21.0.7 with PID 27092 (C:\Users\gokulbtech\OneDrive\Desktop\Project\miniproject\backend\target\classes started by gokulbtech in C:\Users\gokulbtech\OneDrive\Desktop\Project\miniproject\backend)
+2026-03-10T21:47:52.021+05:30  INFO 27092 --- [           main] com.saerp.SaerpApplication               : No active profile set, falling back to 1 default profile: "default"
+2026-03-10T21:47:52.701+05:30  INFO 27092 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-10T21:47:52.778+05:30  INFO 27092 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 70 ms. Found 11 JPA repository interfaces.
+2026-03-10T21:47:53.469+05:30  INFO 27092 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-03-10T21:47:53.483+05:30  INFO 27092 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-10T21:47:53.483+05:30  INFO 27092 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2026-03-10T21:47:53.547+05:30  INFO 27092 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/api]    : Initializing Spring embedded WebApplicationContext
+2026-03-10T21:47:53.548+05:30  INFO 27092 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1481 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-03-10T21:47:53.640+05:30  INFO 27092 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-10T21:47:53.818+05:30  INFO 27092 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@bd3eff4
+2026-03-10T21:47:53.820+05:30  INFO 27092 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-10T21:47:53.980+05:30  INFO 27092 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-10T21:47:54.044+05:30  INFO 27092 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-03-10T21:47:54.077+05:30  INFO 27092 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-03-10T21:47:54.328+05:30  INFO 27092 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-10T21:47:54.395+05:30  WARN 27092 --- [           main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.62 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-03-10T21:47:54.405+05:30  WARN 27092 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-10T21:47:55.414+05:30  INFO 27092 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-10T21:47:55.601+05:30  INFO 27092 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-10T21:47:56.128+05:30  INFO 27092 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-10T21:47:56.852+05:30  WARN 27092 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-10T21:47:57.367+05:30  INFO 27092 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/api'
+2026-03-10T21:47:57.373+05:30  INFO 27092 --- [           main] com.saerp.SaerpApplication               : Started SaerpApplication in 5.742 seconds (process running for 6.196)
+Updated password and activated demo user: admin@university.edu
+Updated password and activated demo user: teacher@university.edu
+Updated password and activated demo user: student@university.edu
+Starting full exam simulation for: CS301
+Created Exam Session: 4
+Generated Answer Sheet: 8 (Code: H0UKDH8L)
+Assigned Teacher: Teacher User to sheet
+Submitted Marks: 85 for sheet: 8
+Published Results for exam: 4
+2026-03-10T21:47:58.637+05:30  INFO 27092 --- [         task-1] com.saerp.service.EmailService           : Mail disabled. Would send to: student@university.edu grade=A+

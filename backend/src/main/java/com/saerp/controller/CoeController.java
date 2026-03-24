@@ -101,6 +101,28 @@ public class CoeController {
         return ResponseEntity.ok(examService.getAllSubjects());
     }
 
+    @GetMapping("/semesters")
+    public ResponseEntity<List<ExamDtos.SemesterStatusDTO>> getSemesterStatuses(
+            @RequestParam(value = "academicYear", defaultValue = "2024-25") String academicYear,
+            @RequestParam(value = "semesters", required = false) List<Integer> semesters) {
+        if (semesters == null || semesters.isEmpty()) {
+            semesters = List.of(1, 3, 5, 7);
+        }
+        return ResponseEntity.ok(examService.getSemesterStatuses(academicYear, semesters));
+    }
+
+    @PostMapping("/semesters/{semester}/publish")
+    public ResponseEntity<List<ExamDtos.ResultDTO>> publishSemester(
+            @PathVariable("semester") Integer semester,
+            @RequestParam(value = "academicYear", defaultValue = "2024-25") String academicYear,
+            HttpServletRequest http) {
+        Long userId = extractUserId(http);
+        List<ExamDtos.ResultDTO> results = resultService.publishSemesterResults(semester, academicYear, userId);
+        auditLogService.log(userId, "PUBLISH_SEMESTER", "SEMESTER", semester.toString(),
+                http.getRemoteAddr(), null, "Published " + results.size() + " results for sem " + semester);
+        return ResponseEntity.ok(results);
+    }
+
     private Long extractUserId(HttpServletRequest request) {
         try {
             String auth = request.getHeader("Authorization");

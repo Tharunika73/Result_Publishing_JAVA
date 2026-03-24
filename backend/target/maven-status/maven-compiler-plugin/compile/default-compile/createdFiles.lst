@@ -13,6 +13,7 @@ com\saerp\dto\StudentProfileDTO$StudentProfileDTOBuilder.class
 com\saerp\entity\Subject.class
 com\saerp\entity\ResultChain.class
 com\saerp\dto\TeacherDTO.class
+com\saerp\dto\ExamDtos$SubmitMarksRequest$SubmitMarksRequestBuilder.class
 com\saerp\dto\ExamDtos$SubmitMarksRequest.class
 com\saerp\dto\ExamDtos$ExamSessionDTO.class
 com\saerp\service\AuthService.class
@@ -26,6 +27,7 @@ com\saerp\entity\User$Role.class
 com\saerp\dto\MarksSubmissionDTO.class
 com\saerp\SaerpApplication.class
 com\saerp\repository\StudentRepository.class
+com\saerp\dto\ExamDtos$SubjectStatusDTO$SubjectStatusDTOBuilder.class
 com\saerp\service\PdfService$1.class
 com\saerp\dto\ExamDtos$GenerateSheetsRequest.class
 com\saerp\repository\ExamSessionRepository.class
@@ -35,6 +37,7 @@ com\saerp\dto\AuthDtos$LoginRequest.class
 com\saerp\entity\AnswerSheetId$Status.class
 com\saerp\entity\AnswerSheetId.class
 com\saerp\repository\AnswerSheetRepository.class
+com\saerp\dto\ExamDtos$SubjectStatusDTO.class
 com\saerp\repository\SubjectRepository.class
 com\saerp\controller\AdminController.class
 com\saerp\dto\ExamDtos$AnswerSheetDTO$AnswerSheetDTOBuilder.class
@@ -78,13 +81,16 @@ com\saerp\controller\StudentController.class
 com\saerp\dto\AuthDtos$LoginResponse$LoginResponseBuilder.class
 com\saerp\entity\Result.class
 com\saerp\dto\AuthDtos$UserDTO.class
+com\saerp\dto\ExamDtos$SemesterStatusDTO$SemesterStatusDTOBuilder.class
 com\saerp\repository\TeacherRepository.class
 com\saerp\service\TeacherService.class
 com\saerp\util\HashUtil.class
+com\saerp\dto\ExamDtos$CreateExamRequest$CreateExamRequestBuilder.class
 com\saerp\repository\ResultRepository.class
 com\saerp\service\AuditLogService.class
 com\saerp\entity\Result$ResultBuilder.class
 com\saerp\dto\TeacherDTO$TeacherDTOBuilder.class
+com\saerp\dto\ExamDtos$SemesterStatusDTO.class
 com\saerp\dto\ExamDtos$AnswerSheetDTO.class
 com\saerp\service\UserService.class
 com\saerp\util\EncryptionUtil.class

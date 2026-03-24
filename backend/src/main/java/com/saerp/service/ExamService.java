@@ -20,6 +20,7 @@ public class ExamService {
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
+    private final ResultRepository resultRepository;
     private final AesEncryptionUtil aesEncryptionUtil;
 
     @Transactional
@@ -127,6 +128,87 @@ public class ExamService {
         return code;
     }
 
+    public List<ExamDtos.SemesterStatusDTO> getSemesterStatuses(String academicYear, List<Integer> semesters) {
+        List<ExamDtos.SemesterStatusDTO> result = new ArrayList<>();
+
+        for (Integer sem : semesters) {
+            List<Subject> subjects = subjectRepository.findBySemester(sem);
+            if (subjects.isEmpty()) {
+                result.add(ExamDtos.SemesterStatusDTO.builder()
+                        .semester(sem)
+                        .academicYear(academicYear)
+                        .readyToPublish(false)
+                        .subjects(new ArrayList<>())
+                        .build());
+                continue;
+            }
+
+            List<ExamDtos.SubjectStatusDTO> subjectStatuses = new ArrayList<>();
+            boolean allReady = true;
+
+            for (Subject sub : subjects) {
+                List<ExamSession> sessions = examSessionRepository.findBySubjectSubjectIdAndAcademicYear(sub.getSubjectId(), academicYear);
+                if (sessions.isEmpty()) {
+                    allReady = false;
+                    subjectStatuses.add(ExamDtos.SubjectStatusDTO.builder()
+                            .subjectName(sub.getSubjectName())
+                            .subjectCode(sub.getSubjectCode())
+                            .examId(null)
+                            .totalSheets(0)
+                            .evaluatedSheets(0)
+                            .build());
+                } else {
+                    // Usually there's only one session per subject per year, handle the latest one
+                    ExamSession session = sessions.get(sessions.size() - 1);
+                    long total = answerSheetRepository.findByExamSessionExamId(session.getExamId()).size();
+                    long evaluated = answerSheetRepository.countByExamSessionExamIdAndStatus(session.getExamId(), AnswerSheetId.Status.EVALUATED);
+                    
+                    if (total == 0 || total != evaluated) {
+                        allReady = false;
+                    }
+
+                    subjectStatuses.add(ExamDtos.SubjectStatusDTO.builder()
+                            .subjectName(sub.getSubjectName())
+                            .subjectCode(sub.getSubjectCode())
+                            .examId(session.getExamId())
+                            .totalSheets(total)
+                            .evaluatedSheets(evaluated)
+                            .build());
+                }
+            }
+
+            // Check if semester results have been published already
+            // Only consider it published if it is fully ready AND results exist
+            boolean published = allReady && subjects.stream().anyMatch(sub -> {
+                List<ExamSession> sessions = examSessionRepository.findBySubjectSubjectIdAndAcademicYear(sub.getSubjectId(), academicYear);
+                if (sessions.isEmpty()) return false;
+                Long examId = sessions.get(sessions.size() - 1).getExamId();
+                return answerSheetRepository.findByExamSessionExamId(examId).stream()
+                        .anyMatch(sheet -> {
+                            try {
+                                String decrypted = aesEncryptionUtil.decrypt(sheet.getEncryptedStudentId());
+                                Long studentId = Long.parseLong(decrypted);
+                                return resultRepository.findByStudentStudentId(studentId).stream()
+                                        .anyMatch(r -> r.getSubject().getSubjectId().equals(sub.getSubjectId()));
+                            } catch (Exception e) { return false; }
+                        });
+            });
+
+            int year = (int) Math.ceil(sem / 2.0);
+
+            result.add(ExamDtos.SemesterStatusDTO.builder()
+                    .semester(sem)
+                    .year(year)
+                    .academicYear(academicYear)
+                    .readyToPublish(allReady)
+                    .alreadyPublished(published)
+                    .subjects(subjectStatuses)
+                    .build());
+        }
+
+        return result;
+    }
+
     public ExamDtos.AnswerSheetDTO toSheetDTO(AnswerSheetId sheet) {
         return ExamDtos.AnswerSheetDTO.builder()
                 .sheetId(sheet.getSheetId())
@@ -150,6 +232,7 @@ public class ExamService {
                 .examId(session.getExamId())
                 .subjectName(session.getSubject().getSubjectName())
                 .subjectCode(session.getSubject().getSubjectCode())
+                .semester(session.getSubject().getSemester())
                 .examDate(session.getExamDate())
                 .academicYear(session.getAcademicYear())
                 .totalSheets(total)

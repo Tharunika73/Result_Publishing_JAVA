@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +24,31 @@ public class ResultService {
     private final ResultRepository resultRepository;
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
+    private final SubjectRepository subjectRepository;
+    private final ExamSessionRepository examSessionRepository;
     private final AesEncryptionUtil aesEncryptionUtil;
     private final EmailService emailService;
+
+    @Transactional
+    public List<ExamDtos.ResultDTO> publishSemesterResults(Integer semester, String academicYear, Long publisherId) {
+        List<ExamDtos.ResultDTO> publishedResults = new ArrayList<>();
+        List<Subject> subjects = subjectRepository.findBySemester(semester);
+        
+        if (subjects.isEmpty()) {
+            throw new RuntimeException("No subjects found for semester " + semester);
+        }
+
+        for (Subject sub : subjects) {
+            List<ExamSession> sessions = examSessionRepository.findBySubjectSubjectIdAndAcademicYear(sub.getSubjectId(), academicYear);
+            if (!sessions.isEmpty()) {
+                // Publish results for the latest exam session of this subject
+                Long examId = sessions.get(sessions.size() - 1).getExamId();
+                publishedResults.addAll(publishResults(examId, publisherId));
+            }
+        }
+        
+        return publishedResults;
+    }
 
     @Transactional
     public List<ExamDtos.ResultDTO> publishResults(Long examId, Long publisherId) {

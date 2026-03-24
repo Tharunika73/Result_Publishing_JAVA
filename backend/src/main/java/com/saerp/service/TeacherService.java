@@ -17,6 +17,8 @@ public class TeacherService {
     private final MarksRepository marksRepository;
     private final ResultChainService resultChainService;
     private final TeacherRepository teacherRepository;
+    private final ResultService resultService;
+    private final UserRepository userRepository;
 
     @Transactional
     public ExamDtos.AnswerSheetDTO submitMarks(ExamDtos.SubmitMarksRequest request, Long teacherUserId) {
@@ -48,6 +50,16 @@ public class TeacherService {
         // Update Sheet Status
         sheet.setStatus(AnswerSheetId.Status.EVALUATED);
         sheet = answerSheetRepository.save(sheet);
+
+        // For demo purposes: Auto-publish results for this exam so student sees it immediately
+        try {
+            User admin = userRepository.findByRole(User.Role.ADMIN).stream().findFirst().orElse(null);
+            if (admin != null) {
+                resultService.publishResults(sheet.getExamSession().getExamId(), admin.getId());
+            }
+        } catch (Exception e) {
+            log.error("Failed to auto-publish results: {}", e.getMessage());
+        }
 
         return toSheetDTO(sheet);
     }

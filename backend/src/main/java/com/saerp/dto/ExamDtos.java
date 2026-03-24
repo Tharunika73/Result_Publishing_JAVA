@@ -41,6 +41,7 @@ public class ExamDtos {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class SubmitMarksRequest {
         @NotNull private Long sheetId;
         @NotNull @DecimalMin("0") @DecimalMax("100") private BigDecimal marks;
@@ -70,6 +71,7 @@ public class ExamDtos {
         private Long examId;
         private String subjectName;
         private String subjectCode;
+        private Integer semester;
         private LocalDate examDate;
         private String academicYear;
         private long totalSheets;
@@ -79,6 +81,7 @@ public class ExamDtos {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class CreateExamRequest {
         @NotNull private Long subjectId;
         @NotNull private LocalDate examDate;
@@ -111,5 +114,30 @@ public class ExamDtos {
         private Integer semester;
         private String department;
         private boolean registered;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SubjectStatusDTO {
+        private String subjectName;
+        private String subjectCode;
+        private Long examId;
+        private long totalSheets;
+        private long evaluatedSheets;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SemesterStatusDTO {
+        private Integer semester;
+        private Integer year;          // Engineering year 1-4 (ceil(semester/2))
+        private String academicYear;
+        private boolean readyToPublish;
+        private boolean alreadyPublished;
+        private java.util.List<SubjectStatusDTO> subjects;
     }
 }

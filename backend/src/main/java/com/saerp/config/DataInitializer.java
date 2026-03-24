@@ -10,11 +10,18 @@ import com.saerp.repository.SubjectRepository;
 import com.saerp.repository.TeacherRepository;
 import com.saerp.repository.UserRepository;
 import com.saerp.repository.CourseRegistrationRepository;
+import com.saerp.dto.ExamDtos;
+import com.saerp.service.ExamService;
+import com.saerp.service.MarkService;
+import com.saerp.service.ResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +33,9 @@ public class DataInitializer implements CommandLineRunner {
     private final TeacherRepository teacherRepository;
     private final CourseRegistrationRepository courseRegistrationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ExamService examService;
+    private final MarkService markService;
+    private final ResultService resultService;
 
     @Override
     @Transactional
@@ -61,25 +71,98 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Seed demo subjects
+        createSubjectIfNotExists("Engineering Mathematics I", "MA101", 1, "Common");
+        createSubjectIfNotExists("Engineering Physics", "PH101", 1, "Common");
+        createSubjectIfNotExists("Engineering Chemistry", "CH101", 1, "Common");
+
+        createSubjectIfNotExists("Data Structures", "CS201", 3, "Computer Science");
+        createSubjectIfNotExists("Object Oriented Programming", "CS202", 3, "Computer Science");
+        createSubjectIfNotExists("Digital Logic Design", "CS203", 3, "Computer Science");
+
         createSubjectIfNotExists("Database Systems", "CS301", 5, "Computer Science");
         createSubjectIfNotExists("Web Development", "CS302", 5, "Computer Science");
-        createSubjectIfNotExists("Data Science", "CS303", 5, "Computer Science");
-        createSubjectIfNotExists("Operating Systems", "CS304", 5, "Computer Science");
-        createSubjectIfNotExists("Computer Networks", "CS305", 5, "Computer Science");
-        createSubjectIfNotExists("Software Engineering", "CS306", 5, "Computer Science");
-        createSubjectIfNotExists("Machine Learning", "CS307", 6, "Computer Science");
-        createSubjectIfNotExists("Cloud Computing", "CS308", 6, "Computer Science");
-        createSubjectIfNotExists("Cybersecurity", "CS309", 6, "Computer Science");
-        createSubjectIfNotExists("Artificial Intelligence", "CS310", 6, "Computer Science");
-        createSubjectIfNotExists("Mobile App Development", "CS311", 6, "Computer Science");
-        createSubjectIfNotExists("Blockchain Technology", "CS312", 7, "Computer Science");
+        
+        createSubjectIfNotExists("Blockchain Technology", "CS401", 7, "Computer Science");
+        createSubjectIfNotExists("Internet of Things", "CS402", 7, "Computer Science");
 
         // Register demo student for demo courses
-        if (studentRepository.existsById(13L)) {
-            registerStudentForCourse(13L, "CS301", "Database Systems");
-            registerStudentForCourse(13L, "CS302", "Web Development");
-            registerStudentForCourse(13L, "CS303", "Data Science");
-            registerStudentForCourse(13L, "CS307", "Machine Learning");
+        registerStudentForCourse(freshStudent.getId(), "MA101", "Engineering Mathematics I");
+        registerStudentForCourse(freshStudent.getId(), "PH101", "Engineering Physics");
+        registerStudentForCourse(freshStudent.getId(), "CH101", "Engineering Chemistry");
+
+        registerStudentForCourse(freshStudent.getId(), "CS201", "Data Structures");
+        registerStudentForCourse(freshStudent.getId(), "CS202", "Object Oriented Programming");
+        registerStudentForCourse(freshStudent.getId(), "CS203", "Digital Logic Design");
+        
+        registerStudentForCourse(freshStudent.getId(), "CS301", "Database Systems");
+        registerStudentForCourse(freshStudent.getId(), "CS302", "Web Development");
+
+        registerStudentForCourse(freshStudent.getId(), "CS401", "Blockchain Technology");
+        registerStudentForCourse(freshStudent.getId(), "CS402", "Internet of Things");
+
+        String academicYear = "2024-25";
+
+        // Setup Semester 1: All subjects have exams, all sheets evaluated -> READY
+        setupSubjectState("MA101", true, true, false, freshTeacher, academicYear);
+        setupSubjectState("PH101", true, true, false, freshTeacher, academicYear);
+        setupSubjectState("CH101", true, true, false, freshTeacher, academicYear);
+
+        // Setup Semester 3: All subjects have exams, but only ONE subject is fully evaluated -> PENDING
+        setupSubjectState("CS201", true, true, false, freshTeacher, academicYear); // Evaluated
+        setupSubjectState("CS202", true, true, false, freshTeacher, academicYear); // Evaluated
+        setupSubjectState("CS203", true, false, false, freshTeacher, academicYear); // NOT Evaluated
+
+        // Setup Semester 5: Exams created, but NO evaluations -> PENDING
+        setupSubjectState("CS301", true, false, false, freshTeacher, academicYear);
+        setupSubjectState("CS302", true, false, false, freshTeacher, academicYear);
+
+        // Setup Semester 7: NO exams created yet -> PENDING
+        setupSubjectState("CS401", false, false, false, freshTeacher, academicYear);
+        setupSubjectState("CS402", false, false, false, freshTeacher, academicYear);
+    }
+
+    private void setupSubjectState(String subjectCode, boolean createExam, boolean evaluateAll, boolean evaluatePartial, User teacherUser, String academicYear) {
+        try {
+            if (!createExam) return;
+
+            Subject subject = subjectRepository.findAll().stream()
+                    .filter(s -> s.getSubjectCode().equals(subjectCode))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectCode));
+
+            User admin = userRepository.findByRole(User.Role.ADMIN).stream().findFirst().orElseThrow();
+
+            // 1. Create Exam Session
+            ExamDtos.CreateExamRequest examReq = ExamDtos.CreateExamRequest.builder()
+                    .subjectId(subject.getSubjectId())
+                    .examDate(LocalDate.now().minusDays(10))
+                    .academicYear(academicYear)
+                    .build();
+            ExamDtos.ExamSessionDTO session = examService.createExamSession(examReq, admin.getId());
+
+            // 2. Generate Answer Sheets
+            List<ExamDtos.AnswerSheetDTO> sheets = examService.generateSheetIds(session.getExamId());
+
+            // 3. Assign Teacher
+            for (ExamDtos.AnswerSheetDTO sheet : sheets) {
+                examService.assignTeacherToSheet(sheet.getSheetId(), teacherUser.getId());
+            }
+
+            // 4. Evaluate if requested
+            if (evaluateAll || evaluatePartial) {
+                int countToEvaluate = evaluateAll ? sheets.size() : Math.max(1, sheets.size() / 2);
+                for (int i = 0; i < countToEvaluate; i++) {
+                    ExamDtos.AnswerSheetDTO sheet = sheets.get(i);
+                    ExamDtos.SubmitMarksRequest marksReq = ExamDtos.SubmitMarksRequest.builder()
+                            .sheetId(sheet.getSheetId())
+                            .marks(new java.math.BigDecimal(80 + (i * 2))) // dummy marks
+                            .build();
+                    markService.submitMarks(marksReq, teacherUser.getId());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to setup subject state for " + subjectCode + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

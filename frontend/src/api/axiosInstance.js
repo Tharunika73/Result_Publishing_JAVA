@@ -60,6 +60,8 @@ export const coeApi = {
   getSheets: (examId) => api.get(`/coe/exams/${examId}/sheets`),
   assignTeacher: (data) => api.post('/coe/sheets/assign-teacher', data),
   publishResults: (examId) => api.post(`/coe/exams/${examId}/publish`),
+  getSemesterStatuses: (academicYear) => api.get(`/coe/semesters?academicYear=${academicYear}`),
+  publishSemester: (semester, academicYear) => api.post(`/coe/semesters/${semester}/publish?academicYear=${academicYear}`),
   getAllResults: () => api.get('/coe/results'),
   searchResults: (q) => api.get(`/coe/results/search?q=${q}`),
   getChain: () => api.get('/coe/chain'),
