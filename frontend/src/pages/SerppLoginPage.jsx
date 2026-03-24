@@ -97,15 +97,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 text-sm text-slate-500">
-          <p className="font-medium text-slate-700 mb-3">Demo Credentials:</p>
-          <div className="space-y-2 bg-slate-50 p-4 rounded-xl border border-slate-100">
-            <p className="flex justify-between"><span className="font-medium">Admin:</span> admin@university.edu</p>
-            <p className="flex justify-between"><span className="font-medium">Teacher:</span> teacher@university.edu</p>
-            <p className="flex justify-between"><span className="font-medium">Student:</span> student@university.edu</p>
-            <p className="text-center text-xs mt-2 text-slate-400 font-mono">Password: password</p>
-          </div>
-        </div>
       </div>
     </div>
   )
