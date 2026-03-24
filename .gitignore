@@ -1,0 +1,27 @@
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+
+# Java / Backend
+target/
+*.jar
+*.war
+*.ear
+*.class
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+# IDEs and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
