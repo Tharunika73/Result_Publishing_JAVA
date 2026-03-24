@@ -1,0 +1,48 @@
+services:
+  # Database Service (PostgreSQL managed by Render)
+  - type: pgo
+    name: saerp-db
+    plan: free # Change to starter if you need more resources or persistence beyond 90 days
+
+  # Backend Web Service (Spring Boot via Docker)
+  - type: web
+    name: saerp-backend
+    env: docker
+    plan: free
+    rootDir: backend
+    healthCheckPath: /api/auth/ping
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: saerp-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: saerp-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: saerp-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AES_SECRET
+        generateValue: true
+      - key: AES_IV
+        generateValue: true
+
+  # Frontend Web Service (React/Vite Static Site)
+  - type: web
+    name: saerp-frontend
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      # Inject the backend URL at build time so the React app connects to the Render backend
+      - key: VITE_API_HOST
+        fromService:
+          type: web
+          name: saerp-backend
+          property: host
