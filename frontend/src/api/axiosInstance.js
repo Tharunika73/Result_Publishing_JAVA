@@ -1,9 +1,14 @@
 import axios from 'axios'
 
-const apiURL = import.meta.env.VITE_API_HOST 
-  ? `https://${import.meta.env.VITE_API_HOST}/api` 
-  : (import.meta.env.VITE_API_URL || 'http://localhost:8080/api');
-
+let apiURL = 'http://localhost:8080/api';
+if (import.meta.env.VITE_API_URL) {
+  apiURL = import.meta.env.VITE_API_URL;
+} else if (import.meta.env.VITE_API_HOST) {
+  let host = import.meta.env.VITE_API_HOST.trim();
+  host = host.replace(/^https?:\/\//, ''); // Strip accidental http:// or https://
+  host = host.replace(/\/$/, ''); // Strip accidental trailing slash
+  apiURL = `https://${host}/api`;
+}
 const api = axios.create({
   baseURL: apiURL,
   headers: { 'Content-Type': 'application/json' },
