@@ -1,8 +1,8 @@
+databases:
+  - name: saerp-db
+    plan: free
+
 services:
-  # Database Service (PostgreSQL managed by Render)
-  - type: pgo
-    name: saerp-db
-    plan: free # Change to starter if you need more resources or persistence beyond 90 days
 
   # Backend Web Service (Spring Boot via Docker)
   - type: web
