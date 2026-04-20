@@ -1,29 +1,18 @@
 const https = require('https');
 
-const data = JSON.stringify({
-  email: 'admin@university.edu',
-  password: 'password'
-});
-
 const req = https.request('https://result-publishing-java-1.onrender.com/api/auth/login', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Content-Length': Buffer.byteLength(data),
     'Origin': 'https://result-publishing.onrender.com'
   }
 }, (res) => {
   console.log(`STATUS: ${res.statusCode}`);
   console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-  res.setEncoding('utf8');
-  res.on('data', (chunk) => {
-    console.log(`BODY: ${chunk}`);
-  });
 });
 
 req.on('error', (e) => {
   console.error(`problem with request: ${e.message}`);
 });
-
-req.write(data);
+req.write('{"email":"admin@university.edu", "password":"password"}');
 req.end();

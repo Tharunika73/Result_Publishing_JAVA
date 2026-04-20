@@ -1,14 +1,26 @@
 import axios from 'axios'
 
 let apiURL = 'http://localhost:8080/api';
+
 if (import.meta.env.VITE_API_URL) {
   apiURL = import.meta.env.VITE_API_URL;
 } else if (import.meta.env.VITE_API_HOST) {
   let host = import.meta.env.VITE_API_HOST.trim();
+  
+  // Robust cleaning of the host string
   host = host.replace(/^https?:\/\//, ''); // Strip accidental http:// or https://
-  host = host.replace(/\/$/, ''); // Strip accidental trailing slash
+  host = host.replace(/\/api\/?$/, '');    // Strip accidental /api from the end
+  host = host.replace(/\/$/, '');           // Strip accidental trailing slash
+  
+  // Ensure we handles hyphens correctly (Render URLs often use them)
   apiURL = `https://${host}/api`;
 }
+
+// Log the API URL in development to help debug connection issues
+if (import.meta.env.DEV) {
+  console.log('Final API Base URL:', apiURL);
+}
+
 const api = axios.create({
   baseURL: apiURL,
   headers: { 'Content-Type': 'application/json' },
